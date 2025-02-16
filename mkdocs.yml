@@ -1,0 +1,13 @@
+site_name: 随身wifi教程
+repo_name : codepy/portable-wifi
+repo_url: https://github.com/codepy/portable-wifi
+edit_uri : blob/main/docs/
+theme:
+  name: material
+  palette:
+    primary: 'teal'
+    accent: 'teal'
+  language: "zh"
+  features:
+    - content.action.edit
+#    - content.action.view
