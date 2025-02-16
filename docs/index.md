@@ -1,146 +1,174 @@
 > 本教程主要面向001系列（包括003和903等）的随身wifi（以下简称板子），这些型号在本版块俗称“纸盒/芷荷”系，它们的元器件布局基本相同，如下图，不少文件通刷。其它410板子比如uz801，16-v3等可以参考此教程，理论方法一样，但不适用于中兴，华为，联发科，展讯等芯片的随身WiFi。
 
-<img src="./image/1457910_b6786f6d_7891_3591_704@3325x2494.jpeg.m.jpg" style="zoom:50%;" />
+<div style="text-align: center;">
+    <img src="./image/1457910_b6786f6d_7891_3591_704@3325x2494.jpeg.m.jpg" style="zoom:70%;" />
+</div>
 
 如果需要刷openwrt和Debian，只有纸盒系和类纸盒的uz801 sp970，其它型号不能刷。
 简单说几个常见问题：SIM卡要插对，天线别弄掉了，板子所处位置的信号不能太差，台式电脑建议用后面主板的USB口，有些电脑前置USB口容易供电不足，很多软件问题可以重启或者更换电脑就能解决，刷机前最好先备份，遇到其它问题看我另一个动态。
-拿到板子后插卡确认能否识别sim卡以及数据wifi功能是否正常，然后撬开外壳确定自己的板子是什么型号。下面开始刷机前后的工作了，需要用到的工具文件在此下载
-
-[链接]123云盘
-
-提取码:OncH
+拿到板子后插卡确认能否识别sim卡以及数据wifi功能是否正常，然后撬开外壳确定自己的板子是什么型号。
 本教程有错误的地方欢迎指正。
 
-# 1 准备工作
+## 1 准备工作
+
 工具文件可能被系统报毒删除，所以以win10为例，建议新建一个随身WiFi文件夹，然后在Windows安全中心—病毒和威胁防护—病毒威胁防护设置—管理设置—排除项—添加排除项，把文件夹添加进去，然后把刷机文件下载到这里，就不会被系统删除了，其它杀毒软件也可以类似这样设置。
 
-
-防止杀毒软件删除文件
+<div style="text-align: center;">
+    <img src="./image/防止杀毒.jpg" style="zoom:70%;" />
+</div>
 
 高通板子刷机需要安装9008驱动和adb驱动，打开并安装文件里的9008driver
 
-## 安装驱动
+<div style="text-align: center;">
+	<img src="./image/安装驱动.jpg" style="zoom:67%;" />
+</div>
 
 接着是关于adb的使用（本文所有用到的adb命令在文件夹文本里都有），adb全称Android debug bridge，后面很多用到的工具都集成了它，所以换到不同工具时可能会出现adb冲突，这时需要在任务管理器中停掉adb/Android debug bridge程序，后面我会提醒，虽然很多工具都集成了adb，但我还是提供了一份谷歌官方的adb工具。打开ADB文件夹到最后，点击地址栏末尾空白，输入cmd再回车就出现命令行界面
 
-## 打开ADB工具
+<div style="text-align: center;">
+<img src="./image/打开abd工具.jpg" style="zoom:67%;" />
+</div>
 
 把板子插上电脑，等待板子完全开机后，输入命令：adb devices
 如果显示有设备连接就说明adb正常（有些板子adb功能没有打开，可以在本版块搜索开启方法）。
 
-## 查看adb是否正常
+<div style="text-align: center;">
+<img src="image/查看ABD是否正常.jpg" style="zoom:67%;" />
+</div>
 
 两种方法进入9008模式：可以输入命令进：adb reboot edl
 或者按住板子的恢复键，插入电脑一两秒后听到叮咚一声再松手。在设备管理器里看到端口有9008就表示成功了，需要9008刷机时再开启此端口。
 
+<div style="text-align: center;">
+<img src="image/9008.jpg" style="zoom:67%;" />
+</div>
 
-9008
+## 2 备份
 
-# 2 备份
 这一步非常重要！不建议新玩家拿到板子后直接刷别人的rom包，而是应该先备份好自己的rom，之后随便刷，只要硬件没坏都能救活。如果自己的板子系统是阉割版的，比如没有热点和网络共享等，可以刷一下别人的system包，其它情况不太需要刷别人的文件。备份主要有三个过程：
 
-1)用Miko loader制作救砖包以及如何救砖。找到miko文件夹，双击miko安装，直接默认就行了，记住安装路径，安装完成后把文件夹内的loader复制到miko的安装目录，创建loader的快捷方式到桌面
+### 1)用Miko loader制作救砖包以及如何救砖。
 
+> miko是全量备份包含基带
 
-复制loader并创建快捷方式
+找到miko文件夹，双击miko安装，直接默认就行了，记住安装路径，安装完成后把文件夹内的loader复制到miko的安装目录，创建loader的快捷方式到桌面
+
+<div style="text-align: center;">
+<img src="image/复制loader.jpg" style="zoom: 80%;" />
+</div>
 
 让板子进入9008模式，打开loader，按照图片数字顺序一步步来
 
+<div style="text-align: center;">
+<img src="image/loader备份.jpg"  />
+</div>
+（点`read`，`partition backup`，双击下面`double click to open save folde`r，选好救砖包生成的路径，点`load partition structure`，点`read full image`就能制作刷机救砖包，大概5分钟以内），保存好这个名为.bin的单文件。
+刷机/救砖方法图片也标注了顺序，分别点`flash`，`emmc block0 flasher`，`double click.....，flash`！
 
-loader备份
+<div style="text-align: center;">
+<img src="image/刷机或者救砖.jpg"  />
+</div>
+### 2)用Qualcomm Premium Tool 备份全部分区文件
 
-（点read，partition backup，双击下面double click to open save folder，选好救砖包生成的路径，点load partition structure，点read full image就能制作刷机救砖包，大概5分钟以内），保存好这个名为.bin的单文件。
-刷机/救砖方法图片也标注了顺序，分别点flash，emmc block0 flasher，double click.....，flash！
+打开它的文件夹，有个提示先注册的程序，注意要把电脑音量调低！然后点开它后可能会提示安装一些东西，同意就行了，没有的话不用管，弹出窗口点击`Generate Key`，生成的key放在你知道的文件夹内
+3)
 
-刷机或救砖
-
-2)用Qualcomm Premium Tool 备份全部分区文件，打开它的文件夹，有个提示先注册的程序，注意要把电脑音量调低！然后点开它后可能会提示安装一些东西，同意就行了，没有的话不用管，弹出窗口点击Generate Key，生成的key放在你知道的文件夹内
-
-
-注册机生成key
+<div style="text-align: center;">
+<img src="image/注册生成key.jpg" style="zoom:80%;" />
+</div>
 
 打开Qualcomm Premium Tool程序，左上菜单栏找到help—active，选择刚才生成的key就能激活这个软件了
 
-
-激活工具
+<div style="text-align: center;">
+<img src="image/激活模式.jpg" style="zoom:80%;" />
+</div>
 
 按照前面介绍的方法使板子进入9008模式，在Qualcomm Premium Tool按照图片数字一步一步进行
 
-
-备份步骤顺序
-
+<div style="text-align: center;">
+<img src="image/备份步骤顺序.jpg"  />
+</div>
 找qualcomm和partition，在下面点scan，Do job，它会识别显示板子的内部分区，点backup（正常会自动跳到这一项），右边backup all，最后do job，等待就行了，备份的文件保存好，里面的有些文件后面会用到。
 如果需要刷写某些分区，点击scan识别分区后，点write，再选要刷的分区，点Do job后选择分区文件，就能完成刷写该分区。
 
-3)备份qcn和root，需要先进行root，简单点的办法就是安装magisk，再刷一下修补过的boot文件就有root了。当然我更建议自己修补boot，不用等别人做好，出问题的概率也更小。下面是如何自己动手获得root权限：
+### 3)备份qcn和root
+
+需要先进行root，简单点的办法就是安装magisk，再刷一下修补过的boot文件就有root了。当然我更建议自己修补boot，不用等别人做好，出问题的概率也更小。下面是如何自己动手获得root权限：
 首先安装ardc，这是一个投屏软件，解决板子没有屏幕无法操作的问题，它的操作逻辑是鼠标左键为点击功能，右键为返回。安装完ardc后先别打开，检查一下任务管理器中，有adb或者android debug bridge程序在后台的话记得停掉，再把板子插到电脑上正常启动，打开ardc等待画面变化，成功后会停在深蓝色界面，然后把鼠标箭头移到此界面，右键点击两下，如果没有出现桌面，需要安装一个第三方桌面启动器，把我提供的apk文件里的launcher从电脑直接托到ardc界面就会自动给板子安装
 
-
-安装桌面启动器
+<div style="text-align: center;">
+<img src="image/安装桌面启动器.jpg" style="zoom:80%;" />
+</div>
 
 等五秒后在主界面点一下鼠标右键，应该会出现选择主屏幕应用选择，点launcher和始终
 
-
-选择默认桌面启动器
-
+<div style="text-align: center;">
+<img src="image/选择默认桌面启动器.jpg" style="zoom:80%;" />
+</div>
 然后就能看到板子的系统界面了，接着安装es文件管理器和magisk，也是直接拖到ardc界面自动安装，装好后点开文件管理器，进入下载文件夹
 
+<div style="text-align: center;">
+<img src="image/文件夹.jpg" style="zoom:80%;" />
+</div>
 
 把之前Qualcomm备份的boot文件直接托到这里，就会复制过来了（几秒钟，点下面的刷新就会显示出来）
 
-
-复制boot文件到板子
+<div style="text-align: center;">
+<img src="image/复制boot.jpg" style="zoom:80%;" />
+</div>
 
 退出es，点开magisk，找到图片提示的位置
 
-
-magisk修补boot
+<div style="text-align: center;">
+<img src="image/magisk修补boot.jpg" style="zoom:80%;" />
+</div>
 
 安装>下一步>选择并修补一个文件，选择刚才复制过来的boot，然后开始，等待它修补完成，退出并来到es文件管理器，进入下载，发现修补好的boot文件名太长了，长按后重命名为magiskboot.img
 再点击ardc菜单最后一个>>; 弹出的cmd这里（实际就是这个软件也集成了adb功能，这里直接使用它的）
 
-
-打开ARDC的ADB功能
+<div style="text-align: center;">
+<img src="image/打开ARDC的ADB功能.jpg" style="zoom:80%;" />
+</div>
 
 输入命令：adb pull /sdcard/Download/magiskboot.img D:/xxx
 这里D:/xxx换成你自己的路径（斜杠朝左还是朝右都可以），接着按回车就会把magiskboot.img导出到你的电脑上
 
 
-导出magiskboot
+![](image/导出magiskboot.jpg)
 
 再输入命令：adb reboot bootloader
 板子会重启到fastboot模式，然后输入命令：fastboot flash boot后再按个空格键，接着把电脑上magiskboot.img拖到这里，会自动生成文件路径名
 
 
-刷入修补后的boot
+![](image/刷入修补后的boot.jpg)
 
 再按回车等待几秒完成后输入命令：
 fastboot reboot
 板子重启后打开magisk（可能得多等会），看到下面四个图标，第二个就是超级用户，那么root就完成了。
 
-
-获得root权限
+<div style="text-align: center;">
+<img src="image/获得root权限.jpg" style="zoom:80%;" />
+</div>
 
 下面是备份qcn的工作，依然在ARDC的>>这里的cmd后输入命令：adb shell su，然后会显示shell申请权限，点永久就行了，接着在magisk的超级用户里看看shell授权成功与否
 
-
-shell授权
+<div style="text-align: center;">
+<img src="image/shell授权.jpg" style="zoom:67%;" />
+</div>
 
 关掉ardc，同时在任务管理器里如果发现adb还在后台也要关掉。然后打开星海svip这个软件（免安装），如果打开时提示缺少库文件，安装我提供的微软软件包，装好后最好重启一下电脑就能打开星海了，以后如果操作没问题，这个软件还是报错的就重启电脑。
 选择高通，再点联机会出现设备信息，找到高通强开1，点一键执行，在设备管理器上查看是否有端口901D（如果开启失败可以尝试手动开启，文件夹里有命令代码）
 
 
-强开端口901D
+![](image/强开端口901D.jpg)
 
-
-成功开启端口901D
+<img src="image/成功开启端口901D.jpg"  />
 
 接着备份qcn，一键执行，选择qcn文件生成路径，正常情况就能备份qcn成功，如果不行就检查901d端口或者重启电脑，备份的qcn一般在500多k，远小于这个大小的应该是备份失败了，建议再来一次。
 
+<img src="image/备份QCN.jpg"  />
 
-备份qcn
-
-# 3 刷机
+## 3 刷机
 1）Android，一般情况刷回自己的包就用Miko loader这个软件，比较简单。刷单个分区，可以用Qualcomm工具，前面都已经介绍；或者进fastboot模式，用命令刷分区，比如刷system分区，命令就是fastboot flash system 加上分区路径（和前面刷boot一样，直接拖到这里，如果失败，把文件放到adb目录下，把分区路径换成分区文件名system.img也能刷，效果更好）。
 
 2）Debian，文件夹里有作者handsomehacker的网址，鉴于github下载较慢所以我提供了Debian的文件，其它都是小文件自己慢慢下载吧。刷机过程作者网址有介绍，001b 001c sp970 uz801作者给了boot和firmware文件用来替换。如果刷后不识别手机卡，可以这样试试看，参考了酷友lkiuyu 的动态，刷回安卓，恢复出厂设置，再root后用星海擦写基带（擦写基带在fastboot模式下），接着写入自己的qcn（写入qcn也要开启901d端口），才能装Debian，boot要替换成作者提供的001c的，别用自己的。firmware需要替换成自己备份的（把Qualcomm工具备份的NON-HLS.bin用diskgenius的虚拟磁盘打开并提取出来，接着用winscp登录Debian后把它复制到/home/user下，再ssh登录Debian，sudo -i获得权限，再用命令cp -rf /home/user/你提取的基带文件/* /usr/lib/firmware/ ，完成替换，重启板子基带应该就能用了。
