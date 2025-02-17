@@ -11,3 +11,10 @@ theme:
   features:
     - content.action.edit
 #    - content.action.view
+nav:
+  - 基础教程: index.md
+  - 随身WiFi助手: 随身WIFI助手.md
+  - 附件: 附件.md
+  
+markdown_extensions:
+  - admonition
