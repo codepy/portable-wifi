@@ -1,4 +1,15 @@
-## 手动更新驱动
+## 1.刷入debian
+
+> 苏苏小亮亮包
+
+打开文件所在目录 在地址栏输入 cmd 后 输入 flash.bat
+
+!!!  note
+	2022-06-08 点击下载
+    该版本默认是随身WIFI模式，开机后自动开启热点，名称：4G_UFI_123456，密码：12345678，并且会开机USB网络共享
+    该版本可在随身WIFI和遥控车模式间切换，SSH登录到Debian系统，执行./ufi.sh,根据提示可切换模式和修改热点密码
+## 2.手动更新驱动
+
 !!! tip
     刷完Debian后开机，设备管理器里会显示一个ADB设备，但是这样连不上SSH，所以需要手动修改，使它能够识别到棒子的USB网络共享
 
@@ -19,6 +30,128 @@
 最后手动更新驱动后设备管理器会出现它，这样才能进行下一步的SSH登录操作
 
 ![](image/跟新驱动完毕.jpg)
+
+## 3.ssh连接
+
+用户名`root`
+
+密码`1`
+
+安装完debian后 设备管理器里出现未知设备
+
+若没有出现未知设备 将驱动更新为 **Composite USB Device** 即可
+
+右键未知设备 更新驱动 选择 浏览我的计算机以查找驱动程序软件  让我从计算机上的可用驱动列表中选取 microsoft ***基于远程rndis设备的usb共享***
+
+![image-20220807200614874](image/image-20220807200614874.png)
+
+## 4.debian连接wifi
+
+使用命令 `nmtui`
+
+网桥里删除wifi 否则不显示附近的wifi
+
+## 5.换源
+
+进入`etc/apt/souces.list` 添加下面[清华源](https://mirrors.tuna.tsinghua.edu.cn/help/debian/) 
+
+```
+# 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free
+
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main contrib non-free
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main contrib non-free
+
+deb https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free
+```
+
+进入`/etc/apt/sources.list.d/mobian.list`
+
+注释掉
+
+```
+#deb http://repo.mobian-project.org/ bullseye main non-free
+```
+
+进入`/etc/apt/sources.list.d/AdoptOpenJDK.list`
+
+将`AdoptOpenJDK`改为`Adoptium`
+
+```
+deb http://mirrors.tuna.tsinghua.edu.cn/Adoptium/deb buster main
+```
+
+由于没有公钥，无法验证下列签名： NO_PUBKEY 843C48A565F8F04B 
+
+解决方法，添加个密钥就行 `apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 843C48A565F8F04B`
+
+更新 `apt-get update && apt-get upgrade -y `
+
+## 6.安装docker
+
+Docker安装很简单，一键脚本安装就行
+
+`apt-get install curl -y ` 	安装`curl`
+
+`curl -sSL https://get.daocloud.io/docker | sh`
+
+## 7.python环境修复
+
+```Shell
+python3 --version
+```
+
+1、更新源：
+
+```Shell
+sudo apt-get update
+```
+
+2、先卸载：
+
+```Shell
+sudo apt-get --purge remove  python3
+```
+
+3、然后我又把没用的依赖全都卸载了：
+
+```Shell
+sudo apt-get autoremove
+```
+
+4、再重新安装：
+
+```Shell
+sudo apt install python3 python3-pip python-is-python2
+```
+
+5、到这里应该就正常了，可以重新验证下
+
+!!! tip
+	【总结】一键执行以下命令即可
+
+```Shell
+echo -e '\n\n\n\n\n\n\n\n\n\n####################################\n\n安装时间较长，请耐心等候！'
+echo -e '\n即将开始安装......\n\n'
+sleep 5
+sudo apt-get update
+sudo apt-get --purge -y remove python3 python3-pip python-is-python2
+sudo apt-get autoremove -y
+sudo apt install -y python3 python3-pip python-is-python2
+echo -e '\n\n####################################\n'
+echo -e '尝试获取当前系统安装的python版本号......\n'
+python3 --version
+echo -e '\n\n\n恭喜你，python环境重新安装完成！'
+echo -e '\n####################################\n\n\n'
+```
+
+
+
+
 
 ## 提取基带
 
@@ -47,5 +180,13 @@ fastboot flash fsg fsg.bin
 fastboot flash modemst1 modemst1.bin
 fastboot flash modemst2 modemst2.bin
 
+fastboot reboot
+```
+先机使用这个
+```
+fastboot flash modem NON-HLOS.bin
+fastboot flash fsc fsc.mbn
+fastboot flash modemst1 modem_st1.mbn
+fastboot flash modemst2 modem_st2.mbn
 fastboot reboot
 ```
