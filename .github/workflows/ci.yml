@@ -18,5 +18,9 @@ jobs:
         with:
           key: ${{ github.ref }}
           path: .cache
+<<<<<<< HEAD
       - run: pip install mkdocs-material mkdocs-glightbox
+=======
+      - run: pip install mkdocs-material mkdocs-glightbox      
+>>>>>>> a17b6d36d3f2ddfa31b980069c2c7d4ef5c1f2f1
       - run: mkdocs gh-deploy --force
