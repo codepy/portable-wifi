@@ -14,6 +14,8 @@ theme:
 nav:
   - 基础教程: index.md
   - 随身WiFi助手: 随身WIFI助手.md
+  - debian教程: debian.md
+  - 常见问题: 常见问题.md
   - 附件: 附件.md
   
 markdown_extensions:
